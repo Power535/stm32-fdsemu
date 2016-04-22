@@ -1,0 +1,5 @@
+*.o
+*.bin
+Keil/STM32*
+make_firmware_update/.git*
+make_firmware_update/*.filters
