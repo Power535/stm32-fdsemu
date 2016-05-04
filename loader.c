@@ -306,7 +306,7 @@ int insert_disklist(int block3)
 	int forcesort = 1;
 
 	BYTE res;
-	char *filename, *ptr;
+	char *ptr;
 	char ext[8];
 	uint8_t diskinfo[44];
 
@@ -350,8 +350,8 @@ int insert_disklist(int block3)
 		}
 		
 		//read next file info
-		Finfo.lfname = (char*)writebuf;
-		Finfo.lfsize = LFN_SIZE;
+//		Finfo.lfname = (char*)writebuf;
+//		Finfo.lfsize = _MAX_LFN;
 		res = f_readdir(&Dir, &Finfo);
 		
 		//out of files, bail
@@ -365,21 +365,7 @@ int insert_disklist(int block3)
 		}
 
 		//check file extension
-		filename = Finfo.lfname;
-		if(Finfo.lfname[0] == 0) {
-			filename = Finfo.fname;
-		}
-
-		if(strcmp(filename,FORCE_SORT_FILENAME) == 0) {
-			forcesort = 1;
-		}
-
-/*		if(strcmp(filename,bootloader_filename) == 0) {
-			update_bootloader();
-//			f_unlink(bootloader_filename);
-		}*/
-
-		ptr = strrchr(filename,'.');
+		ptr = strrchr(Finfo.fname,'.');
 		
 		if(ptr != 0) {
 //			printf("file: '%s', extension '%s'\n",filename,ext);
@@ -393,8 +379,21 @@ int insert_disklist(int block3)
 //				printf("++");
 				num++;
 				memset(diskinfo,0,40);
-				memcpy(diskinfo,Finfo.fname,12);
-				memcpy(diskinfo+12,filename,26);
+				
+				//altname has null string (no lfn)
+				if(Finfo.altname[0] == 0) {
+
+					//short filename
+					memcpy(diskinfo,Finfo.fname,12);
+					memcpy(diskinfo+12,Finfo.fname,26);
+				}
+				
+				//has lfn
+				else {
+					memcpy(diskinfo,Finfo.altname,12);
+					memcpy(diskinfo+12,Finfo.fname,26);
+				}
+
 				sram_write(pos,diskinfo,40);
 				pos += 40;
 			}
