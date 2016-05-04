@@ -1054,7 +1054,8 @@ void fds_tick(void)
 	int needsave = 0;
 
 	//check for disk flip button press
-	if(BUTTON_DOWN() && diskinfo.numsides != 0xFF) {
+	//only allow disk flip if the current data has been saved to sdcard
+	if(BUTTON_DOWN() && diskinfo.numsides != 0xFF && SramDirty == 0) {
 		uint8_t newside = diskinfo.curside + 1;
 
 		LED_RED_ON();
