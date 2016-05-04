@@ -3,3 +3,4 @@
 Keil/STM32*
 make_firmware_update/.git*
 make_firmware_update/*.filters
+bootloader/STM32F030/
